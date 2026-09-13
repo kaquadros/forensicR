@@ -1,4 +1,4 @@
-## forensicR 0.0.1 - first submission
+## forensicR 0.0.2 - first submission
 
 Tools for crime scene investigators: scene mapping from field measurements,
 shooting reconstruction from bullet defects with explicit uncertainty,

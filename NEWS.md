@@ -1,3 +1,11 @@
+# forensicR 0.0.2
+
+* `render_scene_report()`, `render_scene_3d()` and `scene_report_skeleton()`
+  no longer write to the working directory by default; the output directory
+  or file must be given.
+* Vignettes and the report template only switch the png device to cairo on
+  Linux, so they build on macOS without XQuartz.
+
 # forensicR 0.0.1
 
 Initial development version.
