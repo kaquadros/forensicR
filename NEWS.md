@@ -1,3 +1,7 @@
+# forensicR 0.0.3
+
+* The test suite no longer hard-codes the package version.
+
 # forensicR 0.0.2
 
 * `render_scene_report()`, `render_scene_3d()` and `scene_report_skeleton()`

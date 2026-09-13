@@ -1,6 +1,6 @@
 Package: forensicR
 Title: Crime Scene Documentation and Reconstruction Tools
-Version: 0.0.2
+Version: 0.0.3
 Authors@R: c(
     person("Karine", "Quadros", , "kquadros@dgso.org", role = c("aut", "cre")),
     person("Allan", "Quadros", , "allanvcq@gmail.com", role = "aut"))

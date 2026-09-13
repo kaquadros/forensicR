@@ -1,6 +1,6 @@
 test_that("footer names the package version", {
   f <- report_footer(as.POSIXct("2026-09-06 10:00:00", tz = "UTC"), tz = "UTC")
-  expect_match(f, "forensicR 0\\.0\\.1")
+  expect_match(f, paste0("forensicR ", as.character(utils::packageVersion("forensicR"))), fixed = TRUE)
   expect_match(f, "2026-09-06 10:00 UTC")
 })
 
