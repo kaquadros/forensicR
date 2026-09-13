@@ -34,7 +34,9 @@ report_footer <- function(time = Sys.time(), tz = "") {
 #'   `scene-report.Rmd` (overwritten on every run). To customise the
 #'   template, copy it with [scene_report_skeleton()] under another name,
 #'   edit it, and pass that path as `input`.
-#' @param output_dir Directory to write outputs to. Created if missing.
+#' @param output_dir Directory to write outputs to. Created if missing. There
+#'   is no default: choose the case folder explicitly, for example
+#'   `"case-2026-000123"`.
 #' @param formats Character vector, any of `"docx"`, `"pdf"`, `"html"`.
 #' @param params Named list passed to the document as `params`. The packaged
 #'   template understands: `case_id`, `agency`, `investigator`, `scene_date`,
@@ -48,10 +50,13 @@ report_footer <- function(time = Sys.time(), tz = "") {
 #' @seealso [report_footer()], [scene_report_skeleton()]
 #' @export
 render_scene_report <- function(input = NULL,
-                                output_dir = ".",
+                                output_dir,
                                 formats = c("docx", "pdf", "html"),
                                 params = list(),
                                 quiet = TRUE) {
+  if (missing(output_dir)) {
+    cli::cli_abort("{.arg output_dir} must be given; the report is never written to the working directory by default.")
+  }
   formats <- match.arg(formats, c("docx", "pdf", "html"), several.ok = TRUE)
   dir.create(output_dir, showWarnings = FALSE, recursive = TRUE)
   if (is.null(input)) {

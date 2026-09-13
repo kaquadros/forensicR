@@ -8,9 +8,10 @@ Description: Tools for crime scene investigators: scene mapping from field
     measurements (baseline, triangulation, polar), shooting reconstruction
     from bullet defects, structured evidence and custody logging, and
     reproducible scene reports rendered to Word, PDF or HTML.
+Date: 2026-09-13
 License: MIT + file LICENSE
 Encoding: UTF-8
-Language: en-US
+Language: en-GB
 Roxygen: list(markdown = TRUE)
 URL: https://github.com/kaquadros/forensicR
 BugReports: https://github.com/kaquadros/forensicR/issues
@@ -24,6 +25,8 @@ Suggests:
     rgl,
     testthat,
     withr
+Depends: 
+    R (>= 4.1.0)
 Config/testthat/edition: 3
 Imports: 
     cli,

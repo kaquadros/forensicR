@@ -1,0 +1,12 @@
+pandoc: 2.9.2.1
+pkgdown: 2.2.1
+pkgdown_sha: ~
+articles:
+  forensicR: forensicR.html
+  reports-and-3d: reports-and-3d.html
+  scene-mapping: scene-mapping.html
+  shooting-reconstruction: shooting-reconstruction.html
+last_built: 2026-09-13T20:10Z
+urls:
+  reference: https://kaquadros.github.io/forensicR/reference
+  article: https://kaquadros.github.io/forensicR/articles

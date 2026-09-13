@@ -6,7 +6,7 @@
 \usage{
 render_scene_report(
   input = NULL,
-  output_dir = ".",
+  output_dir,
   formats = c("docx", "pdf", "html"),
   params = list(),
   quiet = TRUE
@@ -19,7 +19,9 @@ packaged \code{scene-report} template written to \code{output_dir} as
 template, copy it with \code{\link[=scene_report_skeleton]{scene_report_skeleton()}} under another name,
 edit it, and pass that path as \code{input}.}
 
-\item{output_dir}{Directory to write outputs to. Created if missing.}
+\item{output_dir}{Directory to write outputs to. Created if missing. There
+is no default: choose the case folder explicitly, for example
+\code{"case-2026-000123"}.}
 
 \item{formats}{Character vector, any of \code{"docx"}, \code{"pdf"}, \code{"html"}.}
 
