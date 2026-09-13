@@ -21,8 +21,14 @@ rr_label <- function(label, at, height = 0.1, color = "#111111",
   f <- tempfile(fileext = ".png")
   n <- max(nchar(label), 1)
   # text mask drawn with base graphics: white text on black, then used as alpha
-  grDevices::png(f, width = n * 60, height = 72,
-                 type = if (isTRUE(capabilities("cairo"))) "cairo" else "Xlib")
+  # Linux: prefer cairo over Xlib; elsewhere leave the platform default
+  # (quartz on macOS, windows on Windows), which need no X server.
+  png_type <- if (Sys.info()[["sysname"]] == "Linux") {
+    if (isTRUE(capabilities("cairo"))) "cairo" else "Xlib"
+  } else {
+    getOption("bitmapType")
+  }
+  grDevices::png(f, width = n * 60, height = 72, type = png_type)
   graphics::par(mar = c(0, 0, 0, 0), bg = "black")
   graphics::plot.new(); graphics::plot.window(c(0, 1), c(0, 1))
   graphics::text(0.5, 0.5, label, col = "white", cex = 3.2, font = 2)

@@ -24,7 +24,7 @@ output:
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE)
-if (isTRUE(capabilities("cairo"))) knitr::opts_chunk$set(dev.args = list(png = list(type = "cairo")))
+if (Sys.info()[["sysname"]] == "Linux" && isTRUE(capabilities("cairo"))) knitr::opts_chunk$set(dev.args = list(png = list(type = "cairo")))
 library(forensicR)
 `%||%` <- function(a, b) if (is.null(a)) b else a
 has <- function(x) !is.null(x) && length(x) > 0
