@@ -4,10 +4,11 @@
 \alias{scene_report_skeleton}
 \title{Copy the packaged scene report template}
 \usage{
-scene_report_skeleton(path = "scene-report.Rmd", overwrite = FALSE)
+scene_report_skeleton(path, overwrite = FALSE)
 }
 \arguments{
-\item{path}{Destination path for the \code{.Rmd} file.}
+\item{path}{Destination path for the \code{.Rmd} file. No default: name the
+file explicitly.}
 
 \item{overwrite}{Logical. Overwrite an existing file?}
 }

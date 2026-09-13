@@ -114,7 +114,8 @@ camera_preset <- function(view, bbox, walls, wall_height) {
 #' @param walls Walls tibble; see [room_rect()] and [opening()].
 #' @param points Optional scene points tibble (`z` and `type` used).
 #' @param trajectories Optional `trajectory` or list of them.
-#' @param file Output PNG path.
+#' @param file Output PNG path. No default: name the file explicitly, for
+#'   example inside the case folder.
 #' @param view Camera preset: `"door"` (inside, at the door, eye level),
 #'   `"corner"`, `"overhead"`, or `"dollhouse"` (from outside, south wall
 #'   removed). Ignored if `lookfrom` is given.
@@ -144,13 +145,14 @@ camera_preset <- function(view, bbox, walls, wall_height) {
 #' @export
 render_scene_3d <- function(walls, points = NULL, trajectories = NULL,
                             furniture = NULL, furniture_alpha = NULL,
-                            file = "scene3d.png",
+                            file,
                             view = c("door", "corner", "overhead", "dollhouse"),
                             lookfrom = NULL, lookat = NULL, fov = NULL,
                             wall_height = 2.5, back = 3, cone = TRUE, grid = 1,
                             grid_on = c("floor", "walls"), grid_strength = 0.6,
                             grid_labels = TRUE, omit_wall = NULL,
                             width = 1000, height = 750, samples = 128, ...) {
+  if (missing(file)) cli::cli_abort("{.arg file} must be given; nothing is written to the working directory by default.")
   if (!requireNamespace("rayrender", quietly = TRUE)) {
     cli::cli_abort("Install {.pkg rayrender} to render 3D scenes.")
   }

@@ -46,3 +46,7 @@ test_that("render_scene_report can be re-run into the same directory", {
 test_that("render_scene_report refuses to run without an output directory", {
   expect_error(render_scene_report(formats = "html"), "output_dir")
 })
+
+test_that("scene_report_skeleton refuses to run without a path", {
+  expect_error(scene_report_skeleton(), "path")
+})

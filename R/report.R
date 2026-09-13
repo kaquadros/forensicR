@@ -92,11 +92,13 @@ render_scene_report <- function(input = NULL,
 
 #' Copy the packaged scene report template
 #'
-#' @param path Destination path for the `.Rmd` file.
+#' @param path Destination path for the `.Rmd` file. No default: name the
+#'   file explicitly.
 #' @param overwrite Logical. Overwrite an existing file?
 #' @return The destination path, invisibly.
 #' @export
-scene_report_skeleton <- function(path = "scene-report.Rmd", overwrite = FALSE) {
+scene_report_skeleton <- function(path, overwrite = FALSE) {
+  if (missing(path)) cli::cli_abort("{.arg path} must be given.")
   src <- system.file("rmarkdown", "templates", "scene-report", "skeleton",
                      "skeleton.Rmd", package = "forensicR")
   if (!nzchar(src)) cli::cli_abort("Template not found; reinstall forensicR.")

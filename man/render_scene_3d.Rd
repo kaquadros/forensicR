@@ -10,7 +10,7 @@ render_scene_3d(
   trajectories = NULL,
   furniture = NULL,
   furniture_alpha = NULL,
-  file = "scene3d.png",
+  file,
   view = c("door", "corner", "overhead", "dollhouse"),
   lookfrom = NULL,
   lookat = NULL,
@@ -41,7 +41,8 @@ are drawn as semi-transparent boxes (or cylinders) with a label on top.}
 
 \item{furniture_alpha}{Optional opacity overriding every object's own.}
 
-\item{file}{Output PNG path.}
+\item{file}{Output PNG path. No default: name the file explicitly, for
+example inside the case folder.}
 
 \item{view}{Camera preset: \code{"door"} (inside, at the door, eye level),
 \code{"corner"}, \code{"overhead"}, or \code{"dollhouse"} (from outside, south wall
