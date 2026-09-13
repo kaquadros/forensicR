@@ -1,0 +1,36 @@
+Package: forensicR
+Title: Crime Scene Documentation and Reconstruction Tools
+Version: 0.0.1
+Authors@R: c(
+    person("Karine", "Quadros", , "kquadros@dgso.org", role = c("aut", "cre")),
+    person("Allan", "Quadros", , "allanvcq@gmail.com", role = "aut"))
+Description: Tools for crime scene investigators: scene mapping from field
+    measurements (baseline, triangulation, polar), shooting reconstruction
+    from bullet defects, structured evidence and custody logging, and
+    reproducible scene reports rendered to Word, PDF or HTML.
+License: MIT + file LICENSE
+Encoding: UTF-8
+Language: en-US
+Roxygen: list(markdown = TRUE)
+URL: https://github.com/kaquadros/forensicR
+BugReports: https://github.com/kaquadros/forensicR/issues
+Suggests: 
+    gridExtra,
+    htmltools,
+    htmlwidgets,
+    knitr,
+    png,
+    rayrender,
+    rgl,
+    testthat,
+    withr
+Config/testthat/edition: 3
+Imports: 
+    cli,
+    digest,
+    ggplot2,
+    rlang,
+    rmarkdown,
+    tibble
+Config/roxygen2/version: 8.1.0
+VignetteBuilder: knitr

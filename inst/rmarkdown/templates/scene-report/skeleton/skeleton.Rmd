@@ -1,0 +1,286 @@
+---
+title: "Crime Scene Report"
+params:
+  case_id: "CASE-0000"
+  agency: "Agency name"
+  investigator: "Investigator name"
+  scene_date: !r Sys.Date()
+  units: "m"
+  narrative: "_Narrative description of the scene as found._"
+  points: NULL
+  walls: NULL
+  furniture: NULL
+  scene3d: false
+  wall_height: 2.5
+  shooting: NULL
+  evidence: NULL
+  death_scene: NULL
+output:
+  word_document: default
+  pdf_document:
+    latex_engine: xelatex
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE)
+if (isTRUE(capabilities("cairo"))) knitr::opts_chunk$set(dev.args = list(png = list(type = "cairo")))
+library(forensicR)
+`%||%` <- function(a, b) if (is.null(a)) b else a
+has <- function(x) !is.null(x) && length(x) > 0
+first_segments_report <- function(x) forensicR:::first_segments(x)
+kb <- function(x, ...) knitr::kable(x, row.names = FALSE, ...)
+```
+
+| Case | Agency | Investigator | Scene date |
+|---|---|---|---|
+| `r params$case_id` | `r params$agency` | `r params$investigator` | `r format(params$scene_date)` |
+
+## 1. Scene description
+
+`r params$narrative`
+
+## 2. Scene sketch and measurements
+
+```{r sketch, fig.width=6.5, fig.height=5, eval=has(params$points)}
+plot_scene(params$points, units = params$units, walls = params$walls, furniture = params$furniture)
+```
+
+```{r points, eval=has(params$points)}
+pts <- params$points
+if (!"z" %in% names(pts)) pts$z <- NA_real_
+if (!"type" %in% names(pts)) pts$type <- "evidence"
+kb(data.frame(Point = pts$id, x = round(pts$x, 2), y = round(pts$y, 2),
+              z = ifelse(is.na(pts$z), "", format(round(pts$z, 2))),
+              Type = pts$type, Method = pts$method, check.names = FALSE),
+   col.names = c("Point", paste0("x (", params$units, ")"), paste0("y (", params$units, ")"),
+                 paste0("z (", params$units, ")"), "Type", "Method"))
+```
+
+```{r nopoints, results='asis', eval=!has(params$points)}
+cat("_No scene points supplied._\n")
+```
+
+```{r furniture-table, results='asis', eval=has(params$furniture)}
+cat("\n**Objects in the scene**\n\n")
+print(kb(furniture_table(params$furniture)))
+cat("\nObjects are drawn as schematic boxes to scale. Estimated dimensions are shown with dashed outlines.\n")
+```
+
+```{r elevations, results='asis', fig.width=6.5, fig.height=3.4, eval=has(params$walls) && "room" %in% params$walls$group}
+cat("\n### Wall elevations\n\n")
+trajs_for_walls <- NULL
+if (has(params$shooting)) trajs_for_walls <- params$shooting$trajectories %||% list(params$shooting$trajectory)
+for (side in c("north", "east", "south", "west")) {
+  print(plot_wall_elevation(wall_from_room(params$walls, side), params$points, trajs_for_walls,
+                            params$walls, height = params$wall_height, units = params$units,
+                            title = paste(tools::toTitleCase(side), "wall, viewed from inside"),
+                            furniture = params$furniture))
+  cat("\n\n")
+}
+```
+
+```{r scene3d-setup, include=FALSE}
+trajs3d <- NULL
+if (has(params$shooting)) trajs3d <- params$shooting$trajectories %||% list(params$shooting$trajectory)
+do3d <- isTRUE(params$scene3d) && has(params$walls)
+do_widget <- do3d && knitr::is_html_output() && requireNamespace("rgl", quietly = TRUE)
+# The still is always produced when rayrender is available: it is the figure
+# for PDF/Word, and the fallback shown in HTML when the browser has no WebGL.
+do_still <- do3d && requireNamespace("rayrender", quietly = TRUE)
+```
+
+```{r scene3d-heading, results='asis', eval=do3d}
+cat("\n### 3D reconstruction\n\n")
+if (do_widget) cat("Interactive model: drag to rotate, scroll to zoom.\n\n")
+```
+
+```{r scene3d-widget, eval=do_widget}
+scene_3d_widget(params$walls, params$points, trajs3d, furniture = params$furniture, wall_height = params$wall_height)
+```
+
+```{r scene3d-still, results='asis', eval=do_still}
+f3d <- file.path(knitr::opts_chunk$get("fig.path"), "scene3d.png")
+dir.create(dirname(f3d), showWarnings = FALSE, recursive = TRUE)
+render_scene_3d(params$walls, params$points, trajs3d, furniture = params$furniture, file = f3d, view = "dollhouse",
+                wall_height = params$wall_height, width = 1100, height = 760, samples = 96)
+if (do_widget) {
+  # Shown only if the browser cannot create a WebGL context.
+  cat(sprintf(paste0(
+    '<div id="scene3d-fallback" style="display:none">',
+    '<p><em>Interactive 3D view unavailable: this browser has WebGL disabled. ',
+    'Static rendering shown instead.</em></p>',
+    '<img src="%s" style="max-width:100%%" alt="Schematic 3D reconstruction"></div>\n',
+    '<script>(function(){try{var c=document.createElement("canvas");',
+    'var gl=c.getContext("webgl")||c.getContext("experimental-webgl");',
+    'function show(){document.getElementById("scene3d-fallback").style.display="block";',
+    'var w=document.getElementsByClassName("rglWebGL");for(var i=0;i<w.length;i++){w[i].style.display="none";}}',
+    'if(!gl){show();}}catch(e){show();}})();</script>\n\n'),
+    f3d))
+} else {
+  cat(sprintf("![Schematic 3D reconstruction, to scale, south wall removed for visibility.](%s)\n\n", f3d))
+}
+```
+
+```{r scene3d-none, results='asis', eval=do3d && !do_widget && !do_still}
+cat("_3D rendering requires the rayrender or rgl package._\n")
+```
+
+## 3. Shooting reconstruction
+
+```{r shooting-setup, include=FALSE}
+sh <- params$shooting
+trajs <- NULL
+if (has(sh)) {
+  if (!is.null(sh$trajectories)) trajs <- sh$trajectories
+  else if (!is.null(sh$trajectory)) trajs <- list(sh$trajectory)
+}
+heights <- if (has(sh$heights)) sh$heights else c(standing = 1.5, kneeling = 1.0, prone = 0.3)
+max_distance <- if (has(sh$max_distance)) sh$max_distance else 50
+```
+
+```{r shooting-angles, eval=has(sh$impact)}
+a <- sh$impact
+if ("level" %in% names(a)) a$level <- paste0(round(100 * a$level), "%")
+a[] <- lapply(a, function(v) if (is.numeric(v)) round(v, 1) else v)
+kb(a, caption = "Impact angle from defect ellipse (degrees from surface)")
+```
+
+```{r shooting-table, eval=has(trajs)}
+tt <- trajectory_table(trajs)
+kb(data.frame(Trajectory = ifelse(is.na(tt$path), tt$id, paste0(tt$path, " / ", tt$segment, ": ", tt$id)),
+              Method = ifelse(tt$assumed, "ASSUMED deflection", tt$method),
+              `Defect (x, y, z)` = sprintf("%.2f, %.2f, %.2f", tt$x, tt$y, tt$z),
+              `Flight azimuth` = sprintf("%.1f\u00b0 \u00b1 %.1f\u00b0", tt$azimuth_deg, tt$se_azimuth),
+              `Vertical angle` = sprintf("%.1f\u00b0 \u00b1 %.1f\u00b0", tt$vertical_deg, tt$se_vertical),
+              check.names = FALSE),
+   caption = "Trajectories (azimuth clockwise from north; negative vertical = downward flight)")
+```
+
+```{r shooting-plan, fig.width=6.5, fig.height=5, eval=has(trajs)}
+plot_trajectories(trajs, view = "plan", points = params$points, walls = params$walls,
+                  furniture = params$furniture, convergence = length(trajs) >= 2, units = params$units)
+```
+
+```{r shooting-elev, fig.width=6.5, fig.height=3.2, eval=has(trajs)}
+plot_trajectories(trajs, view = "elevation", heights = heights, units = params$units)
+```
+
+```{r shooting-paths, results='asis', eval=has(trajs) && any(vapply(trajs, inherits, TRUE, "trajectory_path"))}
+cat("\n**Segmented paths through intermediate targets**\n\n")
+for (pth in Filter(function(x) inherits(x, "trajectory_path"), trajs)) {
+  d <- path_deflections(pth)
+  print(kb(data.frame(Path = pth$id, Joint = d$joint,
+                      `Joint (x, y, z)` = sprintf("%.2f, %.2f, %.2f", d$x, d$y, d$z),
+                      `Joint from` = d$joint_source,
+                      Deflection = sprintf("%.1f\u00b0 (%.1f to %.1f)", d$deflection_deg, d$lower, d$upper),
+                      `Miss in / out` = sprintf("%.2f / %.2f", d$miss_in, d$miss_out),
+                      Outgoing = ifelse(d$assumed, "ASSUMED", "measured"), check.names = FALSE)))
+  cat("\n")
+}
+cat("Deflection is the angle between consecutive measured segments; it is never predicted. Miss distances are from the joint to each segment's line: values beyond the measurement uncertainty mean the segments do not meet at the joint. Segments marked ASSUMED are working assumptions, not evidence.\n")
+```
+
+```{r shooting-origin, results='asis', eval=has(trajs)}
+for (t in first_segments_report(trajs)) {
+  oz <- origin_zone(t, heights = heights, max_distance = max_distance, furniture = params$furniture)
+  cat(sprintf("\n**Trajectory %s: possible origin at assumed muzzle heights**\n\n", t$id))
+  print(kb(data.frame(
+    Position = oz$position, `Height` = oz$height,
+    `Horizontal distance back` = ifelse(is.na(oz$horizontal_distance), "not reachable",
+      sprintf("%.2f (%.2f to %.2f)", oz$horizontal_distance, oz$hd_lower, oz$hd_upper)),
+    `x, y` = ifelse(is.na(oz$x), "", sprintf("%.2f, %.2f", oz$x, oz$y)),
+    `Draws reaching` = sprintf("%.0f%%", 100 * oz$p_reachable),
+    check.names = FALSE)))
+  cat("\n")
+}
+cat("Distances in ", params$units, ", limited to ", max_distance, " ", params$units, " from the defect. Intervals are 95% Monte Carlo intervals over the draws that reach the height; a low percentage of reaching draws means the height is poorly supported by the trajectory. Muzzle heights are assumptions and must be justified case by case.\n", sep = "")
+```
+
+```{r shooting-obstructions, results='asis', eval=has(trajs) && has(params$furniture)}
+ob <- trajectory_obstructions(trajs, params$furniture, back = max_distance)
+cat("\n**Objects on the back-projected paths**\n\n")
+if (nrow(ob)) {
+  print(kb(data.frame(Trajectory = ob$trajectory, Object = ob$object,
+                      `From (back)` = sprintf("%.2f", ob$from), `To (back)` = sprintf("%.2f", ob$to),
+                      `Object top` = sprintf("%.2f", ob$top_height), check.names = FALSE)))
+  cat("\nA path through an object means the object is an intermediate target or the path must be reconsidered.\n")
+} else cat("None of the back-projected paths passes through a documented object within ", max_distance, " ", params$units, ".\n", sep = "")
+```
+
+```{r shooting-intersect, results='asis', eval=has(trajs) && length(first_segments_report(trajs)) >= 2}
+cat("\n**Convergence of trajectories**\n\n")
+fs <- first_segments_report(trajs)
+pairs <- utils::combn(seq_along(fs), 2)
+rows <- lapply(seq_len(ncol(pairs)), function(k) {
+  i <- pairs[1, k]; j <- pairs[2, k]
+  ix <- intersect_trajectories(fs[[i]], fs[[j]])
+  s <- ix$summary
+  data.frame(Pair = paste(fs[[i]]$id, fs[[j]]$id, sep = " / "),
+             `Closest approach (x, y, z)` = sprintf("%.2f, %.2f, %.2f", ix$point[1], ix$point[2], ix$point[3]),
+             `Miss distance` = sprintf("%.2f (%.2f to %.2f)", ix$miss_distance,
+                                       s$lower[s$quantity == "miss_distance"], s$upper[s$quantity == "miss_distance"]),
+             `Behind both defects` = sprintf("%s (%.0f%% of draws)", if (ix$behind_both) "yes" else "no", 100 * ix$p_behind_both),
+             check.names = FALSE)
+})
+print(kb(do.call(rbind, rows)))
+cat("\nA small miss distance behind both defects is consistent with, but does not prove, a single firing position.\n")
+```
+
+```{r noshooting, results='asis', eval=!has(sh)}
+cat("_Not applicable._\n")
+```
+
+## 4. Evidence log
+
+```{r evidence, eval=has(params$evidence)}
+ev <- params$evidence$items
+kb(data.frame(Item = ev$item_id, Description = ev$description, Location = ev$location,
+              `Collected by` = ev$collected_by,
+              `Collected at` = format(ev$collected_at, "%Y-%m-%d %H:%M"),
+              Packaging = ev$packaging, check.names = FALSE))
+```
+
+```{r photos, eval=has(params$evidence) && any(lengths(params$evidence$items$photo_paths) > 0)}
+ev <- params$evidence$items
+ph <- do.call(rbind, lapply(seq_len(nrow(ev)), function(i) {
+  if (!length(ev$photo_paths[[i]])) return(NULL)
+  data.frame(Item = ev$item_id[i], Photo = basename(ev$photo_paths[[i]]),
+             `SHA-256` = ev$photo_sha256[[i]], check.names = FALSE)
+}))
+kb(ph, caption = "Photographs and file hashes recorded at collection")
+```
+
+## 5. Chain of custody
+
+```{r custody, eval=has(params$evidence)}
+cu <- params$evidence$custody
+kb(data.frame(Item = cu$item_id, Event = cu$event, From = cu$from, To = cu$to,
+              When = format(cu$at, "%Y-%m-%d %H:%M"),
+              Notes = ifelse(is.na(cu$notes), "", cu$notes), check.names = FALSE))
+```
+
+```{r noevidence, results='asis', eval=!has(params$evidence)}
+cat("_No evidence log supplied._\n")
+```
+
+```{r death-heading, results='asis', eval=has(params$death_scene)}
+cat("## 6. Death scene observations\n\n")
+cat("Observations recorded at the scene. Determination of cause, manner and time of death rests with the coroner or medical examiner.\n")
+```
+
+```{r death, eval=has(params$death_scene)}
+ds <- as.data.frame(params$death_scene)
+ds$observed_at <- format(ds$observed_at, "%Y-%m-%d %H:%M")
+lab <- c(rigor = "Rigor mortis", livor = "Livor mortis", livor_position = "Livor position",
+         decomposition = "Decomposition", insects = "Insect activity",
+         ambient_temp_c = "Ambient temperature (°C)", environment = "Environment",
+         clothing = "Clothing", body_position = "Body position",
+         observed_at = "Observed at", observed_by = "Observed by", notes = "Notes")
+vals <- vapply(names(lab), function(n) { v <- ds[[n]]; if (is.na(v)) "" else as.character(v) }, "")
+kb(data.frame(Field = unname(lab), Observation = unname(vals)))
+```
+
+---
+
+*`r report_footer()`*

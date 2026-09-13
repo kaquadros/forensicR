@@ -1,0 +1,5 @@
+name: Crime Scene Report (forensicR)
+description: >
+  Scene report with evidence log, scene sketch and optional shooting
+  reconstruction. Renders to Word, PDF or HTML.
+create_dir: false

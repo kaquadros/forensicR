@@ -1,0 +1,20 @@
+test_that("evidence log records items, hashes and custody", {
+  f <- withr::local_tempfile(fileext = ".jpg")
+  writeBin(as.raw(1:10), f)
+  log <- evidence_log("C-1", "Test PD")
+  log <- log_item(log, "1", "Knife", collected_by = "CSI A", photos = f)
+  expect_equal(nrow(log$items), 1)
+  expect_equal(nrow(log$custody), 1)
+  expect_equal(unname(log$items$photo_sha256[[1]]), unname(file_hash(f)))
+  log <- log_custody(log, "1", "submitted to lab", from = "CSI A", to = "KBI")
+  expect_equal(nrow(log$custody), 2)
+  expect_error(log_item(log, "1", "dup"))
+  expect_error(log_custody(log, "99", "x"))
+})
+
+test_that("death scene record validates categories and makes no estimate", {
+  r <- death_scene_record(rigor = "complete", livor = "fixed")
+  expect_s3_class(r, "death_scene_record")
+  expect_false(any(grepl("pmi|interval", names(r), ignore.case = TRUE)))
+  expect_error(death_scene_record(rigor = "stiff"))
+})

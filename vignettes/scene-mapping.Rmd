@@ -1,0 +1,214 @@
+---
+title: "Scene mapping: from tape measurements to a to-scale diagram"
+output:
+  rmarkdown::html_vignette:
+    toc: true
+vignette: >
+  %\VignetteIndexEntry{Scene mapping: from tape measurements to a to-scale diagram}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>", fig.width = 7, fig.height = 5.5,
+                      dpi = 96, out.width = "100%")
+# the default X11 png device cannot draw semi-transparent fills; use cairo when available
+if (isTRUE(capabilities("cairo"))) knitr::opts_chunk$set(dev.args = list(png = list(type = "cairo")))
+library(forensicR)
+library(ggplot2)
+```
+
+The rough sketch you draw at the scene is the legal record. What forensicR
+adds is the step after it: converting the numbers on that sketch into one
+consistent coordinate frame, checking that they agree, and drawing the
+to-scale plan and elevations from them.
+
+## Conventions
+
+- **Units**: anything, as long as everything uses the same one. The plots
+  label axes with the `units` argument.
+- **Frame**: x increases to the east, y to the north, z upwards from the
+  floor. Pick a fixed origin, normally a room corner, and write it on the
+  rough sketch.
+- **Azimuth**: degrees clockwise from north. North is 0, east is 90.
+- **Left and right of a wall** always mean *as seen standing inside the
+  room facing that wall*.
+
+## The three measurement methods
+
+```{r methods-figure, echo = FALSE, fig.height = 3.2}
+mk <- function(title, layers) {
+  ggplot() + layers +
+    coord_equal(xlim = c(-0.3, 4.3), ylim = c(-0.3, 3.3), expand = FALSE) +
+    labs(title = title, x = NULL, y = NULL) +
+    theme_minimal(base_size = 10) + theme(panel.grid = element_blank(), axis.text = element_blank())
+}
+room <- annotate("rect", xmin = 0, xmax = 4, ymin = 0, ymax = 3, fill = NA, colour = "grey30", linewidth = 1)
+pt <- annotate("point", x = 2.6, y = 1.8, size = 2.5)
+p1 <- mk("Baseline", list(room,
+  annotate("segment", x = 0, xend = 4, y = 0, yend = 0, colour = "steelblue", linewidth = 1.2),
+  annotate("segment", x = 0, xend = 2.6, y = 0.08, yend = 0.08, arrow = arrow(length = unit(2, "mm"), ends = "both"), colour = "grey40"),
+  annotate("text", x = 1.3, y = 0.25, label = "along", size = 3),
+  annotate("segment", x = 2.6, xend = 2.6, y = 0, yend = 1.8, linetype = 2, colour = "grey40"),
+  annotate("text", x = 2.85, y = 0.9, label = "offset", size = 3, angle = 90), pt,
+  annotate("text", x = 0, y = -0.15, label = "A", size = 3), annotate("text", x = 4, y = -0.15, label = "B", size = 3)))
+p2 <- mk("Triangulation", list(room,
+  annotate("segment", x = 0, xend = 2.6, y = 0, yend = 1.8, linetype = 2, colour = "grey40"),
+  annotate("segment", x = 4, xend = 2.6, y = 0, yend = 1.8, linetype = 2, colour = "grey40"),
+  annotate("text", x = 1.15, y = 1.05, label = "d1", size = 3), annotate("text", x = 3.45, y = 1.05, label = "d2", size = 3),
+  annotate("point", x = c(0, 4), y = c(0, 0), shape = 15, colour = "steelblue", size = 2.5), pt,
+  annotate("text", x = 0, y = -0.15, label = "p1", size = 3), annotate("text", x = 4, y = -0.15, label = "p2", size = 3)))
+p3 <- mk("Polar (total station)", list(room,
+  annotate("point", x = 1, y = 0.5, shape = 17, colour = "steelblue", size = 3),
+  annotate("segment", x = 1, xend = 1, y = 0.5, yend = 2.2, colour = "grey60"),
+  annotate("text", x = 1, y = 2.35, label = "N", size = 3),
+  annotate("segment", x = 1, xend = 2.6, y = 0.5, yend = 1.8, colour = "grey40"),
+  annotate("text", x = 1.55, y = 1.35, label = "distance", size = 3, angle = 39),
+  annotate("path", x = 1 + 0.5 * sin(seq(0, 0.89, length.out = 20)), y = 0.5 + 0.5 * cos(seq(0, 0.89, length.out = 20)), colour = "grey40"),
+  annotate("text", x = 1.35, y = 1.1, label = "az", size = 3), pt))
+gridExtra_available <- requireNamespace("gridExtra", quietly = TRUE)
+if (gridExtra_available) gridExtra::grid.arrange(p1, p2, p3, nrow = 1) else print(p1)
+```
+
+### Baseline (rectangular coordinates)
+
+Fix a line between two known points, usually two wall corners. For each
+item record the distance *along* the line from the origin and the
+perpendicular *offset*. Offsets are positive to the **left** when walking
+from the origin toward the end point.
+
+```{r baseline}
+coords_baseline(along = c(1.2, 3.5), offset = c(0.8, 2.1),
+                origin = c(0, 0), end = c(6, 0), id = c("A", "B"))
+```
+
+The baseline does not have to be along an axis. Any two known points work,
+and the conversion handles the rotation:
+
+```{r baseline-rot}
+coords_baseline(along = 2, offset = 1, origin = c(1, 1), end = c(1, 5))
+```
+
+### Triangulation
+
+Two distances from two fixed points. Two mirror-image solutions exist;
+`side` picks the one to the left or right of the directed line from `p1`
+to `p2`. If the distances cannot meet you get `NA` and a warning.
+
+```{r tri}
+coords_triangulation(d1 = c(3, 4), d2 = c(4, 5), p1 = c(0, 0), p2 = c(5, 0), side = "left")
+coords_triangulation(d1 = 1, d2 = 1, p1 = c(0, 0), p2 = c(5, 0))
+```
+
+### Polar
+
+Distance and azimuth from an instrument position, for total stations or
+compass-and-tape work.
+
+```{r polar}
+coords_polar(distance = c(3.6, 5.0), azimuth = c(15, 330), station = c(3, -2))
+```
+
+### Checking measurements against each other
+
+The most useful habit: measure a few points by two methods and compare.
+Disagreement beyond a few centimetres means a reading or a reference point
+is wrong.
+
+```{r crosscheck}
+a <- coords_baseline(along = 2.6, offset = 1.8, end = c(4, 0), id = "X (baseline)")
+b <- coords_triangulation(d1 = sqrt(2.6^2 + 1.8^2), d2 = sqrt(1.4^2 + 1.8^2),
+                          p1 = c(0, 0), p2 = c(4, 0), id = "X (triangulation)")
+sqrt((a$x - b$x)^2 + (a$y - b$y)^2)      # closure error
+```
+
+## Height and type
+
+Every point can carry a height `z` (a defect in a wall, a stain on a door)
+and a `type`: `"evidence"` (default), `"defect"` or `"bloodstain"`. The
+type only changes how the point is drawn.
+
+```{r ztype}
+coords_polar(distance = 3.6, azimuth = 15, station = c(3, -2),
+             id = "6 Bullet defect", z = 1.35, type = "defect")
+```
+
+## Walls, doors, windows
+
+`room_rect()` is the quick way to get a rectangle. Any room shape can be
+described directly as polylines with columns `x`, `y`, `group` and `type`
+(`"wall"`, `"door"` or `"window"`), so an L-shaped room is just a longer
+polyline.
+
+```{r walls}
+walls <- rbind(
+  room_rect(0, 0, 6, 5),
+  opening(2.5, 0, 3.5, 0, type = "door"),
+  opening(0, 2.0, 0, 3.2, type = "window")
+)
+lshape <- tibble::tibble(x = c(0, 8, 8, 4, 4, 0, 0), y = c(0, 0, 3, 3, 5, 5, 0),
+                         group = "room", type = "wall")
+plot_scene(coords_polar(1, 45, id = "1"), walls = lshape) + ggtitle("A non-rectangular room")
+```
+
+## Furniture
+
+Objects are footprints with heights. Three ways to place them, matching how
+they are measured:
+
+```{r furniture}
+furn <- rbind(
+  along_wall(walls, "north", from = 3.4, length = 2.1, depth = 0.9, id = "Sofa", type = "sofa"),
+  along_wall(walls, "east",  from = 0.3, length = 1.2, depth = 0.6, id = "Bookcase", type = "bookcase"),
+  furniture("Table", "table", x = 3.0, y = 2.0, width = 1.2, depth = 0.8, angle = 15),
+  furniture_from_corners("TV stand", "tv_stand", p1 = c(0.2, 0.2), p2 = c(1.4, 0.6)),
+  furniture("Stool", "chair", x = 1.6, y = 3.6, diameter = 0.4, shape = "circle", colour = "#8e6bbf"),
+  furniture("Victim", "person_lying", x = 2.2, y = 1.0, width = 1.7, depth = 0.5, angle = 20)
+)
+furniture_table(furn)
+```
+
+Use `measured = FALSE` for anything whose size was estimated rather than
+measured: it is drawn dashed and flagged in the report table. `colour` and
+`alpha` (opacity, default 0.45) are per object; `furniture_alpha` in any
+plotting function overrides them all at once.
+
+## Plan view
+
+```{r plan}
+pts <- rbind(
+  coords_baseline(c(1.5, 3.2, 4.8), c(0.9, 2.1, 0.4), end = c(6, 0),
+                  id = c("1 Cartridge case", "2 Cartridge case", "3 Firearm")),
+  coords_polar(3.6, 15, station = c(3, -2), id = "6 Bullet defect", z = 1.35, type = "defect")
+)
+plot_scene(pts, walls = walls, furniture = furn)
+```
+
+The result is a ggplot object, so you can add a title, a north arrow or
+notes with ordinary ggplot2 code.
+
+## Elevations
+
+Each wall face-on, with the heights of what is on or near it. Use
+`wall_from_room()` to get a wall of a rectangular room already ordered
+left-to-right as seen from inside, or pass any segment `c(x1, y1, x2, y2)`.
+
+```{r elevations, fig.height = 3.8}
+plot_wall_elevation(wall_from_room(walls, "north"), pts, walls = walls, furniture = furn)
+plot_wall_elevation(wall_from_room(walls, "west"), pts, walls = walls, furniture = furn)
+```
+
+Items are selected by their perpendicular distance to the wall (`tol`,
+default 0.15) and objects by `tol_furniture` (default 0.35), so a bookcase
+standing near a corner appears on both adjacent walls, as it would in the
+room.
+
+## Exporting
+
+Points and footprints are plain data frames. Write them out for a CAD or
+diagramming package with `write.csv()`:
+
+```{r export, eval = FALSE}
+write.csv(pts, "scene-points.csv", row.names = FALSE)
+write.csv(furniture_footprint(furn), "furniture-footprints.csv", row.names = FALSE)
+```
