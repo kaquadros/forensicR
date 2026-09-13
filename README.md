@@ -64,7 +64,3 @@ log <- log_item(log, "1", "Cartridge case, 9 mm", location = "1", collected_by =
 
 render_scene_report(output_dir = "report")   # docx, pdf and html
 ```
-
-## Status
-
-Early development (0.0.1). Not yet validated for casework.
