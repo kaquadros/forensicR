@@ -1,3 +1,11 @@
+# forensicR 0.0.4
+
+* The package description cites the references for the shooting
+  reconstruction methods.
+* The text labels of `render_scene_3d()` are drawn on a device that is
+  closed, with its graphical parameters restored, as soon as the drawing
+  function exits.
+
 # forensicR 0.0.3
 
 * The test suite no longer hard-codes the package version.

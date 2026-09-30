@@ -28,11 +28,7 @@ rr_label <- function(label, at, height = 0.1, color = "#111111",
   } else {
     getOption("bitmapType")
   }
-  grDevices::png(f, width = n * 60, height = 72, type = png_type)
-  graphics::par(mar = c(0, 0, 0, 0), bg = "black")
-  graphics::plot.new(); graphics::plot.window(c(0, 1), c(0, 1))
-  graphics::text(0.5, 0.5, label, col = "white", cex = 3.2, font = 2)
-  grDevices::dev.off()
+  draw_text_mask(label, f, width = n * 60, height = 72, type = png_type)
   mask <- png::readPNG(f)
   if (length(dim(mask)) == 3) mask <- mask[, , 1]
   rgba <- array(0, c(dim(mask), 4)); rgba[, , 4] <- mask
@@ -53,6 +49,18 @@ rr_label <- function(label, at, height = 0.1, color = "#111111",
   }
   rayrender::xy_rect(x = p[1], y = p[2], z = p[3], xwidth = n * height * 0.6,
                      ywidth = height, angle = c(0, theta, 0), material = mat)
+}
+
+# White text on a black background, written to the png file `f`. The device
+# is opened and closed here, so the caller's graphics state is left untouched.
+draw_text_mask <- function(label, f, width, height, type) {
+  grDevices::png(f, width = width, height = height, type = type, bg = "black")
+  on.exit(grDevices::dev.off())
+  oldpar <- graphics::par(mar = c(0, 0, 0, 0))
+  on.exit(graphics::par(oldpar), add = TRUE, after = FALSE)
+  graphics::plot.new(); graphics::plot.window(c(0, 1), c(0, 1))
+  graphics::text(0.5, 0.5, label, col = "white", cex = 3.2, font = 2)
+  invisible(f)
 }
 
 marker_label <- function(id) {
@@ -429,7 +437,8 @@ scene_3d_widget <- function(walls, points = NULL, trajectories = NULL,
   tl <- if (is.null(trajectories)) list() else as_traj_list(trajectories)
   if (!"type" %in% names(walls)) walls$type <- "wall"
   bbox <- room_bbox(walls, points, tl)
-  old <- options(rgl.useNULL = TRUE); on.exit(options(old), add = TRUE)
+  oldopt <- options(rgl.useNULL = TRUE)
+  on.exit(options(oldopt))
   rgl::open3d(useNULL = TRUE)
   rgl::bg3d("white")
   # floor

@@ -6,7 +6,7 @@
 \alias{forensicR-package}
 \title{forensicR: Crime Scene Documentation and Reconstruction Tools}
 \description{
-Tools for crime scene investigators: scene mapping from field measurements (baseline, triangulation, polar), shooting reconstruction from bullet defects, structured evidence and custody logging, and reproducible scene reports rendered to Word, PDF or HTML.
+Supports crime scene investigators in documenting and reconstructing scenes. Scene points are mapped from field measurements (baseline, triangulation, polar). Shooting incidents are reconstructed from bullet defects with explicit uncertainty, following the methods described in Haag and Haag (2020, ISBN:9780128193976) and Hueske (2015, ISBN:9781498707664). Evidence and custody are logged in a structured form, and reproducible scene reports are rendered to Word, PDF or HTML.
 }
 \seealso{
 Useful links:

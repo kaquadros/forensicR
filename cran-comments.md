@@ -1,9 +1,13 @@
-## forensicR 0.0.3 - first submission
+## forensicR 0.0.4 - resubmission
 
-Tools for crime scene investigators: scene mapping from field measurements,
-shooting reconstruction from bullet defects with explicit uncertainty,
-structured evidence and custody logging, and reproducible scene reports
-rendered to Word, PDF or HTML.
+This is a resubmission of a new package. Following the review of 0.0.3:
+
+* The Description no longer starts with "Tools for".
+* The Description cites the references for the methods, in the form
+  authors (year, ISBN:...).
+* R/render3d.R: graphical parameters and options are reset with an immediate
+  call of on.exit(). The par() call only affects a png device that the
+  function opens itself and closes on exit.
 
 ## Test environments
 
@@ -14,3 +18,6 @@ rendered to Word, PDF or HTML.
 ## R CMD check results
 
 0 ERRORs, 0 WARNINGs, 0 NOTEs apart from "New submission".
+
+The words "Haag" and "Hueske" in the Description are author names of the
+cited references.
