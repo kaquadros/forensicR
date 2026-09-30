@@ -10,7 +10,7 @@ furniture_footprint(f)
 \item{f}{A \code{furniture} tibble.}
 }
 \value{
-A tibble with columns \code{id}, \code{x}, \code{y}, \code{type}, \code{colour}, \code{alpha},
+A tibble with columns \code{id}, \code{x}, \code{y}, \code{type}, \code{color}, \code{alpha},
 \code{measured}, one row per vertex.
 }
 \description{

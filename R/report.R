@@ -31,7 +31,7 @@ report_footer <- function(time = Sys.time(), tz = "") {
 #'
 #' @param input Path to an `.Rmd` file. Defaults to a fresh copy of the
 #'   packaged `scene-report` template written to `output_dir` as
-#'   `scene-report.Rmd` (overwritten on every run). To customise the
+#'   `scene-report.Rmd` (overwritten on every run). To customize the
 #'   template, copy it with [scene_report_skeleton()] under another name,
 #'   edit it, and pass that path as `input`.
 #' @param output_dir Directory to write outputs to. Created if missing. There

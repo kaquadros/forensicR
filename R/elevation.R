@@ -118,7 +118,7 @@ plot_wall_elevation <- function(wall, points = NULL, trajectories = NULL,
       if (min(abs(offs)) <= tol_furniture && max(al) > 0 && min(al) < L) {
         furn_rects <- rbind(furn_rects, tibble::tibble(
           id = g, xmin = max(min(al), 0), xmax = min(max(al), L),
-          ymin = r$z0, ymax = r$z0 + r$height, colour = r$colour,
+          ymin = r$z0, ymax = r$z0 + r$height, color = r$color,
           alpha = if (is.null(furniture_alpha)) r$alpha else furniture_alpha,
           measured = r$measured))
       }
@@ -130,17 +130,17 @@ plot_wall_elevation <- function(wall, points = NULL, trajectories = NULL,
   }
   p <- ggplot2::ggplot() +
     ggplot2::annotate("rect", xmin = 0, xmax = L, ymin = 0, ymax = height,
-                      fill = "grey97", colour = "grey25", linewidth = 1)
+                      fill = "grey97", color = "grey25", linewidth = 1)
   if (!is.null(furn_rects)) {
     p <- p +
       ggplot2::geom_rect(data = furn_rects,
         ggplot2::aes(xmin = .data$xmin, xmax = .data$xmax, ymin = .data$ymin, ymax = .data$ymax,
-                     fill = .data$colour, alpha = .data$alpha,
+                     fill = .data$color, alpha = .data$alpha,
                      linetype = ifelse(.data$measured, "solid", "22")),
-        colour = "grey25", linewidth = 0.4) +
+        color = "grey25", linewidth = 0.4) +
       ggplot2::geom_text(data = furn_rects,
         ggplot2::aes(x = (.data$xmin + .data$xmax) / 2, y = .data$ymax, label = .data$id),
-        vjust = -0.4, size = 2.6, colour = "grey15") +
+        vjust = -0.4, size = 2.6, color = "grey15") +
       ggplot2::scale_fill_identity() + ggplot2::scale_alpha_identity() +
       ggplot2::scale_linetype_identity()
   }
@@ -148,25 +148,25 @@ plot_wall_elevation <- function(wall, points = NULL, trajectories = NULL,
     open_rects$fill <- ifelse(open_rects$type == "door", "grey85", "lightblue")
     p <- p + ggplot2::geom_rect(data = open_rects,
       ggplot2::aes(xmin = .data$xmin, xmax = .data$xmax, ymin = .data$ymin, ymax = .data$ymax),
-      fill = open_rects$fill, colour = "grey40", alpha = 0.6) +
+      fill = open_rects$fill, color = "grey40", alpha = 0.6) +
       ggplot2::geom_text(data = open_rects,
         ggplot2::aes(x = (.data$xmin + .data$xmax) / 2, y = .data$ymin, label = .data$type),
-        vjust = 1.4, size = 2.5, colour = "grey30")
+        vjust = 1.4, size = 2.5, color = "grey30")
   }
   if (nrow(items)) {
     p <- p +
       ggplot2::geom_point(data = items, ggplot2::aes(x = .data$s, y = .data$z, shape = .data$type,
-                                                     colour = .data$type), size = 3) +
+                                                     color = .data$type), size = 3) +
       ggplot2::geom_text(data = items, ggplot2::aes(x = .data$s, y = .data$z, label = .data$id),
                          vjust = -1, size = 2.8) +
       ggplot2::scale_shape_manual(values = c(evidence = 4, defect = 16, bloodstain = 17), name = NULL) +
-      ggplot2::scale_colour_manual(values = c(evidence = "black", defect = "black",
+      ggplot2::scale_color_manual(values = c(evidence = "black", defect = "black",
                                               bloodstain = "firebrick"), name = NULL)
   }
   if (!is.null(arrows)) {
     p <- p + ggplot2::geom_segment(data = arrows,
       ggplot2::aes(x = .data$s0, y = .data$z0, xend = .data$s1, yend = .data$z1),
-      arrow = ggplot2::arrow(length = ggplot2::unit(2.5, "mm")), colour = "grey30")
+      arrow = ggplot2::arrow(length = ggplot2::unit(2.5, "mm")), color = "grey30")
   }
   p + ggplot2::coord_equal(xlim = c(-0.1, L + 0.1), ylim = c(-0.1, height + 0.2), expand = FALSE) +
     ggplot2::labs(x = paste0("distance along wall from left (", units, ")"),

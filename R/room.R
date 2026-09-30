@@ -46,15 +46,15 @@ walls_layer <- function(walls) {
   list(
     if (nrow(w)) ggplot2::geom_path(data = w, ggplot2::aes(x = .data$x, y = .data$y,
                                                           group = .data$group),
-                                    colour = "grey25", linewidth = 1.1),
+                                    color = "grey25", linewidth = 1.1),
     if (nrow(d)) ggplot2::geom_path(data = d, ggplot2::aes(x = .data$x, y = .data$y,
                                                           group = .data$group),
-                                    colour = "white", linewidth = 2.2),
+                                    color = "white", linewidth = 2.2),
     if (nrow(d)) ggplot2::geom_path(data = d, ggplot2::aes(x = .data$x, y = .data$y,
                                                           group = .data$group),
-                                    colour = "grey55", linewidth = 0.6, linetype = 3),
+                                    color = "grey55", linewidth = 0.6, linetype = 3),
     if (nrow(n)) ggplot2::geom_path(data = n, ggplot2::aes(x = .data$x, y = .data$y,
                                                           group = .data$group),
-                                    colour = "steelblue", linewidth = 1.4)
+                                    color = "steelblue", linewidth = 1.4)
   )
 }

@@ -2,7 +2,7 @@
 % Please edit documentation in R/shooting.R
 \name{trajectory_table}
 \alias{trajectory_table}
-\title{Summarise one or more trajectories as a table}
+\title{Summarize one or more trajectories as a table}
 \usage{
 trajectory_table(trajectories)
 }
@@ -13,5 +13,5 @@ trajectory_table(trajectories)
 A tibble with one row per trajectory.
 }
 \description{
-Summarise one or more trajectories as a table
+Summarize one or more trajectories as a table
 }

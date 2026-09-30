@@ -10,11 +10,11 @@ f <- rbind(
 test_that("furniture constructors fill defaults and validate", {
   expect_s3_class(f, "furniture")
   expect_equal(f$height[f$id == "Sofa"], 0.85)
-  expect_equal(f$colour[f$id == "Table"], "#c2884e")
+  expect_equal(f$color[f$id == "Table"], "#c2884e")
   expect_equal(f$alpha, rep(0.45, 5))
   expect_error(furniture("X", "spaceship", 0, 0, 1, 1))
   expect_error(furniture("X", "table", 0, 0))
-  expect_equal(furniture("X", "box", 0, 0, 1, 1, colour = "red", alpha = 0.2)$colour, "red")
+  expect_equal(furniture("X", "box", 0, 0, 1, 1, color = "red", alpha = 0.2)$color, "red")
   fc <- furniture_from_corners("C", "cabinet", c(5.4, 0.2), c(6.0, 2.0))
   expect_equal(c(fc$x, fc$y, fc$width, fc$depth), c(5.4, 0.2, 0.6, 1.8))
 })
@@ -29,7 +29,7 @@ test_that("along_wall puts the object against the wall and inside the room", {
   expect_equal(range(fe$y), c(5 - 1.6, 5 - 1.0)) # left end of the east wall is its north end
 })
 
-test_that("centred rectangles and circles anchor correctly", {
+test_that("centered rectangles and circles anchor correctly", {
   fc <- furniture("T", "table", x = 2, y = 2, width = 1, depth = 0.5, anchor = "center")
   fp <- furniture_footprint(fc)
   expect_equal(c(mean(fp$x), mean(fp$y)), c(2, 2))

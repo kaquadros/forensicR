@@ -17,7 +17,7 @@ furniture(
   angle = 0,
   shape = c("rect", "circle"),
   anchor = NULL,
-  colour = NULL,
+  color = NULL,
   alpha = 0.45,
   measured = TRUE,
   steps = NA_integer_,
@@ -27,17 +27,17 @@ furniture(
 \arguments{
 \item{id}{Character. Unique label (e.g. \code{"Sofa"}, \code{"Table 1"}).}
 
-\item{type}{Character. A type from \code{\link[=furniture_catalogue]{furniture_catalogue()}}, or any other
+\item{type}{Character. A type from \code{\link[=furniture_catalog]{furniture_catalog()}}, or any other
 string (then \code{height} is required).}
 
 \item{x, y}{Anchor position, scene units: south-west corner of a rectangle
-(before rotation) or the centre of a circle. See \code{anchor}.}
+(before rotation) or the center of a circle. See \code{anchor}.}
 
 \item{width, depth}{Rectangle extent along its own x and y axes.}
 
 \item{diameter}{Circle diameter (use with \code{shape = "circle"}).}
 
-\item{height}{Height above \code{z0}. Default from the catalogue.}
+\item{height}{Height above \code{z0}. Default from the catalog.}
 
 \item{z0}{Height of the object's base (e.g. a shelf). Default 0.}
 
@@ -47,7 +47,7 @@ string (then \code{height} is required).}
 
 \item{anchor}{\code{"sw"} (default for rectangles) or \code{"center"}.}
 
-\item{colour}{Fill colour. Default from the catalogue.}
+\item{color}{Fill color. Default from the catalog.}
 
 \item{alpha}{Opacity 0 to 1 used in every view. Default \code{0.45}, so what is
 behind an object stays visible.}
@@ -70,8 +70,8 @@ A one-row tibble of class \code{furniture}. Combine several with
 Objects are rectangular or circular footprints with a height. Rectangles
 are anchored at their south-west corner in their own frame and rotated
 counter-clockwise by \code{angle} about that corner; circles are anchored at
-their centre. Height, colour and label default from
-\code{\link[=furniture_catalogue]{furniture_catalogue()}} by \code{type}.
+their center. Height, color and label default from
+\code{\link[=furniture_catalog]{furniture_catalog()}} by \code{type}.
 }
 \examples{
 f <- rbind(

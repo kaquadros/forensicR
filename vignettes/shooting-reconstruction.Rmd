@@ -91,7 +91,7 @@ trajs <- list(t_rod, t_2pt, t_ell)
 trajectory_table(trajs)[, c("id", "method", "azimuth_deg", "se_azimuth", "vertical_deg", "se_vertical")]
 ```
 
-Compare the uncertainties: the two-point method with centimetre positions
+Compare the uncertainties: the two-point method with centimeter positions
 is ten times tighter than the rod; the ellipse of a nearly round defect is
 the loosest. The plots below show the same thing as fans.
 
@@ -143,7 +143,7 @@ ix$summary
 
 In this example the three defects were simulated from one shooter standing
 at (2.4, 2.0, 1.5) and the reconstruction recovers that point to a few
-centimetres. A small miss distance is consistent with, but does not prove,
+centimeters. A small miss distance is consistent with, but does not prove,
 a single firing position.
 
 ## 6. Objects on the path

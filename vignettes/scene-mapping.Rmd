@@ -43,28 +43,28 @@ mk <- function(title, layers) {
     labs(title = title, x = NULL, y = NULL) +
     theme_minimal(base_size = 10) + theme(panel.grid = element_blank(), axis.text = element_blank())
 }
-room <- annotate("rect", xmin = 0, xmax = 4, ymin = 0, ymax = 3, fill = NA, colour = "grey30", linewidth = 1)
+room <- annotate("rect", xmin = 0, xmax = 4, ymin = 0, ymax = 3, fill = NA, color = "grey30", linewidth = 1)
 pt <- annotate("point", x = 2.6, y = 1.8, size = 2.5)
 p1 <- mk("Baseline", list(room,
-  annotate("segment", x = 0, xend = 4, y = 0, yend = 0, colour = "steelblue", linewidth = 1.2),
-  annotate("segment", x = 0, xend = 2.6, y = 0.08, yend = 0.08, arrow = arrow(length = unit(2, "mm"), ends = "both"), colour = "grey40"),
+  annotate("segment", x = 0, xend = 4, y = 0, yend = 0, color = "steelblue", linewidth = 1.2),
+  annotate("segment", x = 0, xend = 2.6, y = 0.08, yend = 0.08, arrow = arrow(length = unit(2, "mm"), ends = "both"), color = "grey40"),
   annotate("text", x = 1.3, y = 0.25, label = "along", size = 3),
-  annotate("segment", x = 2.6, xend = 2.6, y = 0, yend = 1.8, linetype = 2, colour = "grey40"),
+  annotate("segment", x = 2.6, xend = 2.6, y = 0, yend = 1.8, linetype = 2, color = "grey40"),
   annotate("text", x = 2.85, y = 0.9, label = "offset", size = 3, angle = 90), pt,
   annotate("text", x = 0, y = -0.15, label = "A", size = 3), annotate("text", x = 4, y = -0.15, label = "B", size = 3)))
 p2 <- mk("Triangulation", list(room,
-  annotate("segment", x = 0, xend = 2.6, y = 0, yend = 1.8, linetype = 2, colour = "grey40"),
-  annotate("segment", x = 4, xend = 2.6, y = 0, yend = 1.8, linetype = 2, colour = "grey40"),
+  annotate("segment", x = 0, xend = 2.6, y = 0, yend = 1.8, linetype = 2, color = "grey40"),
+  annotate("segment", x = 4, xend = 2.6, y = 0, yend = 1.8, linetype = 2, color = "grey40"),
   annotate("text", x = 1.15, y = 1.05, label = "d1", size = 3), annotate("text", x = 3.45, y = 1.05, label = "d2", size = 3),
-  annotate("point", x = c(0, 4), y = c(0, 0), shape = 15, colour = "steelblue", size = 2.5), pt,
+  annotate("point", x = c(0, 4), y = c(0, 0), shape = 15, color = "steelblue", size = 2.5), pt,
   annotate("text", x = 0, y = -0.15, label = "p1", size = 3), annotate("text", x = 4, y = -0.15, label = "p2", size = 3)))
 p3 <- mk("Polar (total station)", list(room,
-  annotate("point", x = 1, y = 0.5, shape = 17, colour = "steelblue", size = 3),
-  annotate("segment", x = 1, xend = 1, y = 0.5, yend = 2.2, colour = "grey60"),
+  annotate("point", x = 1, y = 0.5, shape = 17, color = "steelblue", size = 3),
+  annotate("segment", x = 1, xend = 1, y = 0.5, yend = 2.2, color = "grey60"),
   annotate("text", x = 1, y = 2.35, label = "N", size = 3),
-  annotate("segment", x = 1, xend = 2.6, y = 0.5, yend = 1.8, colour = "grey40"),
+  annotate("segment", x = 1, xend = 2.6, y = 0.5, yend = 1.8, color = "grey40"),
   annotate("text", x = 1.55, y = 1.35, label = "distance", size = 3, angle = 39),
-  annotate("path", x = 1 + 0.5 * sin(seq(0, 0.89, length.out = 20)), y = 0.5 + 0.5 * cos(seq(0, 0.89, length.out = 20)), colour = "grey40"),
+  annotate("path", x = 1 + 0.5 * sin(seq(0, 0.89, length.out = 20)), y = 0.5 + 0.5 * cos(seq(0, 0.89, length.out = 20)), color = "grey40"),
   annotate("text", x = 1.35, y = 1.1, label = "az", size = 3), pt))
 gridExtra_available <- requireNamespace("gridExtra", quietly = TRUE)
 if (gridExtra_available) gridExtra::grid.arrange(p1, p2, p3, nrow = 1) else print(p1)
@@ -112,7 +112,7 @@ coords_polar(distance = c(3.6, 5.0), azimuth = c(15, 330), station = c(3, -2))
 ### Checking measurements against each other
 
 The most useful habit: measure a few points by two methods and compare.
-Disagreement beyond a few centimetres means a reading or a reference point
+Disagreement beyond a few centimeters means a reading or a reference point
 is wrong.
 
 ```{r crosscheck}
@@ -162,14 +162,14 @@ furn <- rbind(
   along_wall(walls, "east",  from = 0.3, length = 1.2, depth = 0.6, id = "Bookcase", type = "bookcase"),
   furniture("Table", "table", x = 3.0, y = 2.0, width = 1.2, depth = 0.8, angle = 15),
   furniture_from_corners("TV stand", "tv_stand", p1 = c(0.2, 0.2), p2 = c(1.4, 0.6)),
-  furniture("Stool", "chair", x = 1.6, y = 3.6, diameter = 0.4, shape = "circle", colour = "#8e6bbf"),
+  furniture("Stool", "chair", x = 1.6, y = 3.6, diameter = 0.4, shape = "circle", color = "#8e6bbf"),
   furniture("Victim", "person_lying", x = 2.2, y = 1.0, width = 1.7, depth = 0.5, angle = 20)
 )
 furniture_table(furn)
 ```
 
 Use `measured = FALSE` for anything whose size was estimated rather than
-measured: it is drawn dashed and flagged in the report table. `colour` and
+measured: it is drawn dashed and flagged in the report table. `color` and
 `alpha` (opacity, default 0.45) are per object; `furniture_alpha` in any
 plotting function overrides them all at once.
 

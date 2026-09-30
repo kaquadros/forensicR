@@ -1,3 +1,8 @@
+# forensicR 0.0.5
+
+* The package now uses American English throughout. The furniture catalog
+  is `furniture_catalog()` and every `colour` argument is now `color`.
+
 # forensicR 0.0.4
 
 * The package description cites the references for the shooting
@@ -40,7 +45,7 @@ Initial development version.
   joint consistency), `assumed_segment()` (explicitly flagged assumption).
   `trajectory_2pt()` is now anchored at its second point, the impact.
 * Scene objects: `furniture()`, `along_wall()`, `furniture_from_corners()`,
-  `furniture_catalogue()`, `furniture_table()`, `trajectory_obstructions()`.
+  `furniture_catalog()`, `furniture_table()`, `trajectory_obstructions()`.
   Objects are schematic, to-scale, semi-transparent boxes drawn in every
   view; `origin_zone()` can exclude positions inside objects.
 * Evidence documentation: `evidence_log()`, `log_item()`, `log_custody()`,

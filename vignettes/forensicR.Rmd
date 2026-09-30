@@ -26,14 +26,14 @@ and changing the numbers. Everything here runs in a few seconds, except the
 investigator already takes (distances from walls and corners, defect
 dimensions, rod angles) into to-scale diagrams, shooting reconstructions
 with honest uncertainty, and a report in Word, PDF or HTML. It does not
-replace your agency's forms or your judgement; it makes the geometry
+replace your agency's forms or your judgment; it makes the geometry
 reproducible and the uncertainty explicit.
 
 ## 1. The scene
 
 A living room, 6 m by 5 m. One shot was fired; one cartridge case, one
 firearm and one bullet defect in the north wall were documented. We use
-**metres** throughout (any unit works as long as you are consistent), and a
+**meters** throughout (any unit works as long as you are consistent), and a
 coordinate frame where **x runs east, y runs north, and z is height above
 the floor**. The south-west corner of the room is the origin (0, 0).
 
@@ -112,8 +112,8 @@ furn <- rbind(
 furniture_table(furn)
 ```
 
-Heights and colours come from `furniture_catalogue()`; pass `height =`,
-`colour =` or `alpha =` to override them. Objects are semi-transparent by
+Heights and colors come from `furniture_catalog()`; pass `height =`,
+`color =` or `alpha =` to override them. Objects are semi-transparent by
 default so nothing behind them is hidden.
 
 ## 4. The sketch
@@ -136,7 +136,7 @@ plot_wall_elevation(wall_from_room(walls, "north"), scene, walls = walls, furnit
 
 A trajectory rod was placed in the defect. The angle finder read 3 degrees
 downward and the protractor, relative to north, gave a flight azimuth of
-352 degrees (the bullet was travelling almost due north when it struck the
+352 degrees (the bullet was traveling almost due north when it struck the
 wall). Rod readings are commonly taken to be good to about 5 degrees; that
 uncertainty is part of the trajectory from the start.
 
@@ -254,4 +254,4 @@ numbers.
   three ways to establish a trajectory, convergence of several shots,
   objects on the path, segmented paths through intermediate targets.
 - `vignette("reports-and-3d")`: everything the report template accepts,
-  customising it, the 3D views and the interactive widget.
+  customizing it, the 3D views and the interactive widget.

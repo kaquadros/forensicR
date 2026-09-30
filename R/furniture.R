@@ -1,20 +1,20 @@
 # Furniture and other scene objects ------------------------------------------
 #
 # Every object is a footprint (rectangle or circle) with a height, drawn as a
-# schematic, to-scale, semi-transparent box in every view. Nothing is modelled
+# schematic, to-scale, semi-transparent box in every view. Nothing is modeled
 # in detail on purpose: a demonstrative exhibit must not add detail that was
 # not measured.
 
-#' Catalogue of object types with default height, colour and label
+#' Catalog of object types with default height, color and label
 #'
 #' Used by [furniture()] and friends to fill in defaults. Heights are typical
 #' values and should be replaced by measurements whenever available.
 #'
-#' @return A tibble with columns `type`, `height`, `colour`, `label`.
+#' @return A tibble with columns `type`, `height`, `color`, `label`.
 #' @export
-furniture_catalogue <- function() {
+furniture_catalog <- function() {
   tibble::tribble(
-    ~type,             ~height, ~colour,   ~label,
+    ~type,             ~height, ~color,   ~label,
     "sofa",            0.85,    "#5b8def", "Sofa",
     "armchair",        0.90,    "#5b8def", "Armchair",
     "chair",           0.90,    "#7aa6f0", "Chair",
@@ -40,22 +40,22 @@ furniture_catalogue <- function() {
 #' Objects are rectangular or circular footprints with a height. Rectangles
 #' are anchored at their south-west corner in their own frame and rotated
 #' counter-clockwise by `angle` about that corner; circles are anchored at
-#' their centre. Height, colour and label default from
-#' [furniture_catalogue()] by `type`.
+#' their center. Height, color and label default from
+#' [furniture_catalog()] by `type`.
 #'
 #' @param id Character. Unique label (e.g. `"Sofa"`, `"Table 1"`).
-#' @param type Character. A type from [furniture_catalogue()], or any other
+#' @param type Character. A type from [furniture_catalog()], or any other
 #'   string (then `height` is required).
 #' @param x,y Anchor position, scene units: south-west corner of a rectangle
-#'   (before rotation) or the centre of a circle. See `anchor`.
+#'   (before rotation) or the center of a circle. See `anchor`.
 #' @param width,depth Rectangle extent along its own x and y axes.
 #' @param diameter Circle diameter (use with `shape = "circle"`).
-#' @param height Height above `z0`. Default from the catalogue.
+#' @param height Height above `z0`. Default from the catalog.
 #' @param z0 Height of the object's base (e.g. a shelf). Default 0.
 #' @param angle Rotation in degrees, counter-clockwise, about the anchor.
 #' @param shape `"rect"` or `"circle"`.
 #' @param anchor `"sw"` (default for rectangles) or `"center"`.
-#' @param colour Fill colour. Default from the catalogue.
+#' @param color Fill color. Default from the catalog.
 #' @param alpha Opacity 0 to 1 used in every view. Default `0.45`, so what is
 #'   behind an object stays visible.
 #' @param measured Logical. Were the dimensions measured (TRUE) or estimated
@@ -76,15 +76,15 @@ furniture_catalogue <- function() {
 furniture <- function(id, type, x, y, width = NULL, depth = NULL, diameter = NULL,
                       height = NULL, z0 = 0, angle = 0,
                       shape = c("rect", "circle"), anchor = NULL,
-                      colour = NULL, alpha = 0.45, measured = TRUE,
+                      color = NULL, alpha = 0.45, measured = TRUE,
                       steps = NA_integer_, notes = NA_character_) {
   shape <- match.arg(shape)
-  cat_row <- furniture_catalogue()[furniture_catalogue()$type == type, ]
+  cat_row <- furniture_catalog()[furniture_catalog()$type == type, ]
   if (is.null(height)) {
     if (!nrow(cat_row)) cli::cli_abort("Unknown type {.val {type}}: give `height` explicitly.")
     height <- cat_row$height
   }
-  if (is.null(colour)) colour <- if (nrow(cat_row)) cat_row$colour else "#c9c9c9"
+  if (is.null(color)) color <- if (nrow(cat_row)) cat_row$color else "#c9c9c9"
   if (is.null(anchor)) anchor <- if (shape == "circle") "center" else "sw"
   anchor <- match.arg(anchor, c("sw", "center"))
   if (shape == "circle") {
@@ -104,7 +104,7 @@ furniture <- function(id, type, x, y, width = NULL, depth = NULL, diameter = NUL
   angle <- angle %% 360
   out <- tibble::tibble(
     id = as.character(id), type = type, x = x, y = y, width = width, depth = depth,
-    height = height, z0 = z0, angle = angle, shape = shape, colour = colour,
+    height = height, z0 = z0, angle = angle, shape = shape, color = color,
     alpha = alpha, measured = measured, steps = as.integer(steps), notes = notes
   )
   class(out) <- c("furniture", class(out))
@@ -123,7 +123,7 @@ furniture <- function(id, type, x, y, width = NULL, depth = NULL, diameter = NUL
 #' @param length Extent along the wall.
 #' @param depth Extent into the room.
 #' @param id,type Passed to [furniture()].
-#' @param ... Further arguments to [furniture()] (`height`, `colour`, ...).
+#' @param ... Further arguments to [furniture()] (`height`, `color`, ...).
 #' @param room_id Group id of the room rectangle in `walls`.
 #' @return A one-row `furniture` tibble.
 #' @examples
@@ -134,8 +134,8 @@ along_wall <- function(walls, side, from, length, depth, id, type, ..., room_id 
   w <- wall_from_room(walls, side, id = room_id)
   a <- w[1:2]; b <- w[3:4]; d <- b - a; L <- sqrt(sum(d^2)); u <- d / L
   r <- walls[walls$group == room_id, ]
-  centre <- c(mean(range(r$x)), mean(range(r$y)))
-  n <- c(-u[2], u[1]); if (sum(n * (centre - a)) < 0) n <- -n
+  center <- c(mean(range(r$x)), mean(range(r$y)))
+  n <- c(-u[2], u[1]); if (sum(n * (center - a)) < 0) n <- -n
   # rectangle local axes: ex along the wall, ey into the room
   if (isTRUE(all.equal(n, c(-u[2], u[1])))) {
     corner <- a + from * u; ang <- atan2(u[2], u[1]) * 180 / pi
@@ -162,7 +162,7 @@ furniture_from_corners <- function(id, type, p1, p2, ...) {
 #' Footprint polygons of scene objects
 #'
 #' @param f A `furniture` tibble.
-#' @return A tibble with columns `id`, `x`, `y`, `type`, `colour`, `alpha`,
+#' @return A tibble with columns `id`, `x`, `y`, `type`, `color`, `alpha`,
 #'   `measured`, one row per vertex.
 #' @export
 furniture_footprint <- function(f) {
@@ -179,7 +179,7 @@ furniture_footprint <- function(f) {
       px <- r$x + cs[, 1] * ex[1] + cs[, 2] * ey[1]
       py <- r$y + cs[, 1] * ex[2] + cs[, 2] * ey[2]
     }
-    tibble::tibble(id = r$id, x = px, y = py, type = r$type, colour = r$colour,
+    tibble::tibble(id = r$id, x = px, y = py, type = r$type, color = r$color,
                    alpha = r$alpha, measured = r$measured)
   }))
 }
@@ -264,17 +264,17 @@ furniture_layers <- function(f, alpha_override = NULL, label_size = 2.8) {
   if (!is.null(alpha_override)) fp$alpha <- alpha_override
   cent <- do.call(rbind, lapply(split(fp, fp$id), function(g)
     tibble::tibble(id = g$id[1], x = mean(g$x), y = mean(g$y))))
-  fills <- stats::setNames(unique(fp$colour), unique(fp$colour))
+  fills <- stats::setNames(unique(fp$color), unique(fp$color))
   list(
     ggplot2::geom_polygon(data = fp, ggplot2::aes(x = .data$x, y = .data$y, group = .data$id,
-                                                  fill = .data$colour, alpha = .data$alpha),
-                          colour = NA),
+                                                  fill = .data$color, alpha = .data$alpha),
+                          color = NA),
     ggplot2::geom_path(data = rbind(fp, fp[!duplicated(fp$id), ]),  # close each ring
                        ggplot2::aes(x = .data$x, y = .data$y, group = .data$id,
                                     linetype = ifelse(.data$measured, "measured", "estimated")),
-                       colour = "grey25", linewidth = 0.4),
+                       color = "grey25", linewidth = 0.4),
     ggplot2::geom_text(data = cent, ggplot2::aes(x = .data$x, y = .data$y, label = .data$id),
-                       size = label_size, colour = "grey15"),
+                       size = label_size, color = "grey15"),
     ggplot2::scale_fill_identity(), ggplot2::scale_alpha_identity(),
     ggplot2::scale_linetype_manual(values = c(measured = "solid", estimated = "22"),
                                    name = "Dimensions", drop = FALSE)

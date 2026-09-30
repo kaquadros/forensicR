@@ -37,7 +37,7 @@ A tibble with one row per height: \code{position}, \code{height},
 \code{horizontal_distance} (median), \code{hd_lower}, \code{hd_upper}, \code{x}, \code{y}, and
 \code{p_reachable}, the fraction of draws in which the back-projected line
 reaches that height within \code{max_distance} (it cannot when, e.g., the shot
-travelled upward and the height is above the defect). Quantiles are
+traveled upward and the height is above the defect). Quantiles are
 computed over the reachable draws only, so read them together with
 \code{p_reachable}.
 }

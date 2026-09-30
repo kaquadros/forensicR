@@ -15,7 +15,7 @@ render_scene_report(
 \arguments{
 \item{input}{Path to an \code{.Rmd} file. Defaults to a fresh copy of the
 packaged \code{scene-report} template written to \code{output_dir} as
-\code{scene-report.Rmd} (overwritten on every run). To customise the
+\code{scene-report.Rmd} (overwritten on every run). To customize the
 template, copy it with \code{\link[=scene_report_skeleton]{scene_report_skeleton()}} under another name,
 edit it, and pass that path as \code{input}.}
 

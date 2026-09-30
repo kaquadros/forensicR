@@ -238,7 +238,7 @@ print.trajectory <- function(x, ...) {
   invisible(x)
 }
 
-#' Summarise one or more trajectories as a table
+#' Summarize one or more trajectories as a table
 #'
 #' @param trajectories A `trajectory`, a `trajectory_path`, or a list of them.
 #' @return A tibble with one row per trajectory.
@@ -294,7 +294,7 @@ as_traj_list <- function(x) {
 #'   `horizontal_distance` (median), `hd_lower`, `hd_upper`, `x`, `y`, and
 #'   `p_reachable`, the fraction of draws in which the back-projected line
 #'   reaches that height within `max_distance` (it cannot when, e.g., the shot
-#'   travelled upward and the height is above the defect). Quantiles are
+#'   traveled upward and the height is above the defect). Quantiles are
 #'   computed over the reachable draws only, so read them together with
 #'   `p_reachable`.
 #' @examples
@@ -460,26 +460,26 @@ plot_trajectories <- function(trajectories, view = c("plan", "elevation"),
       furniture_layers(furniture, furniture_alpha) +
       (if (!is.null(links)) ggplot2::geom_segment(
         data = links, ggplot2::aes(x = .data$x0, y = .data$y0, xend = .data$x1, yend = .data$y1,
-                                   colour = .data$id), linetype = "13", linewidth = 0.8)) +
+                                   color = .data$id), linetype = "13", linewidth = 0.8)) +
       ggplot2::geom_segment(
         data = lines[!lines$central, ],
         ggplot2::aes(x = .data$x0, y = .data$y0, xend = .data$x1, yend = .data$y1,
-                     colour = .data$id), alpha = 0.06) +
+                     color = .data$id), alpha = 0.06) +
       ggplot2::geom_segment(
         data = lines[lines$central & !lines$forward, ],
         ggplot2::aes(x = .data$x0, y = .data$y0, xend = .data$x1, yend = .data$y1,
-                     colour = .data$id), linewidth = 0.9,
+                     color = .data$id), linewidth = 0.9,
         arrow = ggplot2::arrow(ends = "first", length = ggplot2::unit(3, "mm"))) +
       ggplot2::geom_segment(
         data = lines[lines$central & lines$forward, ],
         ggplot2::aes(x = .data$x0, y = .data$y0, xend = .data$x1, yend = .data$y1,
-                     colour = .data$id), linewidth = 0.7, linetype = "22",
+                     color = .data$id), linewidth = 0.7, linetype = "22",
         arrow = ggplot2::arrow(ends = "last", length = ggplot2::unit(3, "mm"))) +
       ggplot2::geom_point(data = lines[lines$central, ],
                           ggplot2::aes(x = .data$x0, y = .data$y0), size = 2) +
       ggplot2::coord_equal() +
       ggplot2::labs(x = paste0("x, east (", units, ")"), y = paste0("y, north (", units, ")"),
-                    colour = "Trajectory",
+                    color = "Trajectory",
                     caption = "Arrow points toward the origin of fire; faint lines are Monte Carlo draws.") +
       ggplot2::theme_minimal()
     if (!is.null(points)) {
@@ -492,7 +492,7 @@ plot_trajectories <- function(trajectories, view = c("plan", "elevation"),
     conv <- convergence_list(tl, convergence)
     if (length(conv)) {
       # Keep the cloud inside the drawn region: closest-approach draws from
-      # wide fans can land tens of metres away and would swamp the axes.
+      # wide fans can land tens of meters away and would swamp the axes.
       xr <- range(c(lines$x0, lines$x1)); yr <- range(c(lines$y0, lines$y1))
       cloud <- do.call(rbind, lapply(seq_along(conv), function(k) {
         ix <- conv[[k]]
@@ -502,7 +502,7 @@ plot_trajectories <- function(trajectories, view = c("plan", "elevation"),
         if (nrow(s)) s$k <- k
         s
       }))
-      centre <- do.call(rbind, lapply(seq_along(conv), function(k) {
+      center <- do.call(rbind, lapply(seq_along(conv), function(k) {
         ix <- conv[[k]]
         tibble::tibble(x = ix$point[1], y = ix$point[2], k = k)
       }))
@@ -513,15 +513,15 @@ plot_trajectories <- function(trajectories, view = c("plan", "elevation"),
                       collapse = "\n")
       p <- p +
         ggplot2::geom_point(data = cloud, ggplot2::aes(x = .data$x, y = .data$y),
-                            colour = "grey20", alpha = 0.08, size = 0.7) +
-        ggplot2::geom_point(data = centre, ggplot2::aes(x = .data$x, y = .data$y),
-                            shape = 23, fill = "gold", colour = "black", size = 4) +
-        ggplot2::geom_text(data = centre, ggplot2::aes(x = .data$x, y = .data$y,
+                            color = "grey20", alpha = 0.08, size = 0.7) +
+        ggplot2::geom_point(data = center, ggplot2::aes(x = .data$x, y = .data$y),
+                            shape = 23, fill = "gold", color = "black", size = 4) +
+        ggplot2::geom_text(data = center, ggplot2::aes(x = .data$x, y = .data$y,
                                                        label = .data$k),
                            size = 2.6, fontface = "bold") +
         ggplot2::labs(caption = paste(
           "Arrow points toward the origin of fire; faint lines are Monte Carlo draws.",
-          "Grey cloud: closest-approach draws behind both defects; diamonds: central estimates.",
+          "Gray cloud: closest-approach draws behind both defects; diamonds: central estimates.",
           legend, sep = "\n")) +
         ggplot2::theme(plot.caption = ggplot2::element_text(hjust = 0))
     }
@@ -536,10 +536,10 @@ plot_trajectories <- function(trajectories, view = c("plan", "elevation"),
                           ggplot2::aes(x = 0, y = .data$z0, xend = .data$hd1, yend = .data$z1),
                           linewidth = 0.9) +
     ggplot2::geom_hline(data = hdf, ggplot2::aes(yintercept = .data$height), linetype = 2,
-                        colour = "grey40") +
+                        color = "grey40") +
     ggplot2::geom_text(data = hdf, ggplot2::aes(x = back, y = .data$height,
                                                 label = .data$position),
-                       hjust = 1, vjust = -0.4, size = 2.8, colour = "grey30") +
+                       hjust = 1, vjust = -0.4, size = 2.8, color = "grey30") +
     ggplot2::geom_point(data = lines[lines$central, ], ggplot2::aes(x = 0, y = .data$z0), size = 2) +
     ggplot2::facet_wrap(~ label) +
     ggplot2::coord_equal() +

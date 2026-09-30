@@ -19,7 +19,7 @@ along_wall(walls, side, from, length, depth, id, type, ..., room_id = "room")
 
 \item{id, type}{Passed to \code{\link[=furniture]{furniture()}}.}
 
-\item{...}{Further arguments to \code{\link[=furniture]{furniture()}} (\code{height}, \code{colour}, ...).}
+\item{...}{Further arguments to \code{\link[=furniture]{furniture()}} (\code{height}, \code{color}, ...).}
 
 \item{room_id}{Group id of the room rectangle in \code{walls}.}
 }

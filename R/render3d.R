@@ -297,7 +297,7 @@ render_scene_3d <- function(walls, points = NULL, trajectories = NULL,
     for (i in seq_len(nrow(furniture))) {
       r <- furniture[i, ]
       al <- if (is.null(furniture_alpha)) r$alpha else furniture_alpha
-      mat <- if (al >= 0.999) R(color = r$colour) else R(color = r$colour, alpha_texture = alpha_file(al))
+      mat <- if (al >= 0.999) R(color = r$color) else R(color = r$color, alpha_texture = alpha_file(al))
       if (r$shape == "circle") {
         scene <- rayrender::add_object(scene, rayrender::cylinder(
           x = r$x, y = r$z0 + r$height / 2, z = -r$y, radius = r$width / 2,
@@ -354,10 +354,10 @@ render_scene_3d <- function(walls, points = NULL, trajectories = NULL,
   }
   # trajectories
   pal <- c("#c1121f", "#0b7a75", "#1d4ed8", "#e07a00", "#6a1b9a")
-  colour_key <- unique(vapply(tl, function(t) t$path_id %||% t$id, ""))
+  color_key <- unique(vapply(tl, function(t) t$path_id %||% t$id, ""))
   for (k in seq_along(tl)) {
     t <- tl[[k]]
-    col <- pal[(match(t$path_id %||% t$id, colour_key) - 1) %% length(pal) + 1]
+    col <- pal[(match(t$path_id %||% t$id, color_key) - 1) %% length(pal) + 1]
     is_assumed <- isTRUE(t$assumed)
     seg_len <- if (!is.null(t$start)) sqrt(sum((t$anchor - t$start)^2)) else back
     a <- t$anchor; b <- if (!is.null(t$start)) t$start else t$project(back)
@@ -508,10 +508,10 @@ scene_3d_widget <- function(walls, points = NULL, trajectories = NULL,
           c0 <- c(r$x, r$y) + ((k - 1) * w_k) * ex
           cs <- rbind(c(0, 0), c(w_k, 0), c(w_k, r$depth), c(0, r$depth))
           vx <- c0[1] + cs[, 1] * ex[1] + cs[, 2] * ey[1]; vy <- c0[2] + cs[, 1] * ex[2] + cs[, 2] * ey[2]
-          rgl_extrude(vx, vy, r$z0, r$z0 + h_k, r$colour, al)
+          rgl_extrude(vx, vy, r$z0, r$z0 + h_k, r$color, al)
         }
       } else {
-        rgl_extrude(v$x, v$y, r$z0, r$z0 + r$height, r$colour, al)
+        rgl_extrude(v$x, v$y, r$z0, r$z0 + r$height, r$color, al)
       }
       rgl::text3d(mean(v$x), mean(v$y), r$z0 + r$height + 0.12, texts = r$id, cex = 0.7)
     }
@@ -535,10 +535,10 @@ scene_3d_widget <- function(walls, points = NULL, trajectories = NULL,
     }
   }
   pal <- c("#d7263d", "#1b998b", "#2e86de", "#f4a259", "#6a4c93")
-  colour_key <- unique(vapply(tl, function(t) t$path_id %||% t$id, ""))
+  color_key <- unique(vapply(tl, function(t) t$path_id %||% t$id, ""))
   for (k in seq_along(tl)) {
     t <- tl[[k]]
-    col <- pal[(match(t$path_id %||% t$id, colour_key) - 1) %% length(pal) + 1]
+    col <- pal[(match(t$path_id %||% t$id, color_key) - 1) %% length(pal) + 1]
     is_assumed <- isTRUE(t$assumed)
     seg_len <- if (!is.null(t$start)) sqrt(sum((t$anchor - t$start)^2)) else back
     a <- t$anchor; b <- if (!is.null(t$start)) t$start else t$project(back)
