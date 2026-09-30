@@ -1,4 +1,4 @@
-## forensicR 0.0.5 - resubmission
+## forensicR 0.0.6 - resubmission
 
 This is a resubmission of a new package. Following the review of 0.0.3:
 

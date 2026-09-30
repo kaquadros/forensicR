@@ -1,3 +1,7 @@
+# forensicR 0.0.6
+
+* The README installation instruction points to the package repository.
+
 # forensicR 0.0.5
 
 * The package now uses American English throughout. The furniture catalog

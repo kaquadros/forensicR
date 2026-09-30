@@ -41,7 +41,7 @@ one-line note of the forensicR version that produced it.
 
 ```r
 # install.packages("pak")
-pak::pak("allanvcq/forensicR")
+pak::pak("kaquadros/forensicR")
 ```
 
 ## Quick start
